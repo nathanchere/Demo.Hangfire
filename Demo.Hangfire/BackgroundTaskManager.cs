@@ -7,19 +7,19 @@ using Hangfire.MemoryStorage;
 namespace Demo.Hangfire
 {
     public class BackgroundTaskManager : IDisposable
-    {
-        private IContainer Container;
-        private BackgroundJobServer server; // Hangfire server
+    {        
+        private readonly BackgroundJobServer _server; // HangFire job runner / thread manager / master of ceremonies
 
         public BackgroundTaskManager(int workerCount)
         {
             var iocContainer = InitialiseAutofacContainer();
 
-            GlobalConfiguration.Configuration.UseMemoryStorage();
-            GlobalConfiguration.Configuration.UseAutofacActivator(iocContainer);
+            GlobalConfiguration.Configuration.UseMemoryStorage();            
+            GlobalConfiguration.Configuration.UseAutofacActivator(iocContainer);            
+            //// Uncomment this if you want to see more of what HangFire is doing under the hood
             //GlobalConfiguration.Configuration.UseColouredConsoleLogProvider();
 
-            server = new BackgroundJobServer(new BackgroundJobServerOptions
+            _server = new BackgroundJobServer(new BackgroundJobServerOptions
             {
                 WorkerCount = workerCount,
             });
@@ -39,7 +39,7 @@ namespace Demo.Hangfire
 
         public void Dispose()
         {
-            server?.Dispose();
+            _server?.Dispose();
         }
     }
 }

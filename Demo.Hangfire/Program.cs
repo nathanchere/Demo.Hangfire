@@ -6,10 +6,12 @@ namespace Demo.Hangfire
     class Program
     {
         private static BackgroundJobClient jobClient;
+        private const int NumberOfBackgroundWorkers = 3;
 
         static void Main(string[] args)
-        {            
-            var backgroundTaskManager = new BackgroundTaskManager(3);
+        {
+            // There is also InjectedBackgroundTaskManager to show how simple it is without the IOC setup
+            var backgroundTaskManager = new BackgroundTaskManager(NumberOfBackgroundWorkers);
 
             jobClient = new BackgroundJobClient();
 
@@ -18,9 +20,15 @@ namespace Demo.Hangfire
                 Console.WriteLine("== Hangfire demo ==");
                 Console.WriteLine("Beginning job scheduling...");
 
-                RunSimpleJobs();
+                // Uncomment whichever one(s) you want to run
+                // Remember to increase NumberOfBackgroundWorkers if you have 3 or more long running jobs
+                //////
+                //RunSimpleJobs();
                 //RunOngoingJob();
                 //RunInstancedJobs();
+                //////
+
+                jobClient.
 
                 Console.WriteLine("Job scheduling complete... tada!");
                 Console.WriteLine("== Press [Enter] to exit ==");
@@ -34,13 +42,14 @@ namespace Demo.Hangfire
             finally
             {
                 Console.WriteLine("== Cleaning up ==");
+                backgroundTaskManager.Dispose();
             }
         }
 
         private static void RunSimpleJobs()
         {
             for (int i = 0; i < 10; i++)
-            {
+            { 
                 var counter = i;
                 jobClient.Enqueue(() => SimpleJob.Run(counter));
             }
@@ -48,7 +57,11 @@ namespace Demo.Hangfire
 
         private static void RunOngoingJob()
         {
+            // Simple long-running background job
             jobClient.Enqueue(() => HeartbeatJob.Run());
+
+
+            // Slightly less simple background job
             //jobClient.Enqueue(() => HeartbeatJobInception.Run());
         }
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Demo.Hangfire.Db
 {
     [Table("InsuranceRegistry.FileRegistry")]
-    public partial class FileRegistry
+    public class FileRegistry
     {
         [Key]
         public int FileId { get; set; }
